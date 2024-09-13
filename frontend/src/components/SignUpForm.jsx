@@ -1,60 +1,75 @@
-// // src/components/SignUpForm.jsx
-// import React, { useState } from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-// const SignUpForm = () => {
-//     const [email, setEmail] = useState('');
-//     const [password, setPassword] = useState('');
-//     const [error, setError] = useState('');
+const SignUp = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: ''
+  });
 
-//     const handleSubmit = async (e) => {
-//         e.preventDefault();
-//         try {
-//             const response = await fetch('YOUR_BACKEND_URL/signup', {
-//                 method: 'POST',
-//                 headers: { 'Content-Type': 'application/json' },
-//                 body: JSON.stringify({ email, password }),
-//             });
-//             const data = await response.json();
-//             if (data.success) {
-//                 window.location.href = '/login';
-//             } else {
-//                 setError(data.message);
-//             }
-//         } catch (err) {
-//             setError('Something went wrong!');
-//         }
-//     };
+  const { name, email, password } = formData;
+  const navigate = useNavigate();
 
-//     return (
-//         <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow-md">
-//             <h2 className="text-2xl font-bold mb-4">Sign Up</h2>
-//             <form onSubmit={handleSubmit} className="space-y-4">
-//                 <input
-//                     type="email"
-//                     placeholder="Email"
-//                     value={email}
-//                     onChange={(e) => setEmail(e.target.value)}
-//                     required
-//                     className="w-full px-3 py-2 border rounded"
-//                 />
-//                 <input
-//                     type="password"
-//                     placeholder="Password"
-//                     value={password}
-//                     onChange={(e) => setPassword(e.target.value)}
-//                     required
-//                     className="w-full px-3 py-2 border rounded"
-//                 />
-//                 <button
-//                     type="submit"
-//                     className="w-full px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-//                 >
-//                     Sign Up
-//                 </button>
-//                 {error && <p className="text-red-500">{error}</p>}
-//             </form>
-//         </div>
-//     );
-// };
+  const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-// export default SignUpForm;
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/auth/register', formData);
+      localStorage.setItem('token', res.data.token); // Store JWT token
+      navigate('/dashboard'); // Redirect to dashboard after sign-up
+    } catch (err) {
+      console.error(err.response.data); // Handle errors
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 pt-16">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
+        <h2 className="text-2xl font-bold mb-6">Sign Up</h2>
+        <form onSubmit={onSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={name}
+              onChange={onChange}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={email}
+              onChange={onChange}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={password}
+              onChange={onChange}
+              required
+              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md">
+            Sign Up
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default SignUp;

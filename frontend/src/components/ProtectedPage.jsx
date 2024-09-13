@@ -1,13 +1,14 @@
-// // src/components/ProtectedPage.jsx
-// import React from 'react';
+import React from 'react';
+import { Navigate } from 'react-router-dom';
 
-// const ProtectedPage = () => {
-//     return (
-//         <div className="max-w-md mx-auto mt-10 p-4 border rounded shadow-md">
-//             <h2 className="text-2xl font-bold mb-4">Protected Page</h2>
-//             <p>You have access to this page because you are logged in.</p>
-//         </div>
-//     );
-// };
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token'); // Check if token is present
 
-// export default ProtectedPage;
+  if (!token) {
+    return <Navigate to="/login" />; // Redirect to login if not authenticated
+  }
+
+  return children;
+};
+
+export default ProtectedRoute;
