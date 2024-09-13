@@ -15,7 +15,9 @@ mongoose.connect(process.env.MONGODB_URI)
   });
 
 // Define routes
-app.use('/api/auth', require('./routes/authRoutes'));
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
 app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/sales', require('./routes/salesRoutes'));
 
