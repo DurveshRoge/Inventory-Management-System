@@ -1,10 +1,18 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cors = require('cors'); // Import the CORS package
 
 dotenv.config();
 const app = express();
 app.use(express.json());
+
+// Configure CORS
+app.use(cors({
+  origin: 'http://localhost:5173', // Update this to match your frontend's URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Connect to MongoDB without deprecated options
 mongoose.connect(process.env.MONGODB_URI)
