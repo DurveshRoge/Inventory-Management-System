@@ -3,8 +3,10 @@ const Product = require('../models/Product');
 // Add a new product
 exports.addProduct = async (req, res) => {
   const { name, quantity, price } = req.body;
+  const image = req.file ? req.file.path : null; // Handle image upload
+
   try {
-    const product = await Product.create({ name, quantity, price });
+    const product = await Product.create({ name, quantity, price, image });
     res.status(201).json({ success: true, product });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
@@ -38,9 +40,11 @@ exports.getProducts = async (req, res) => {
 // Update an existing product
 exports.updateProduct = async (req, res) => {
   const { id } = req.params;
-  const updatedData = req.body;
+  const { name, quantity, price } = req.body;
+  const image = req.file ? req.file.path : null; // Handle image upload
+
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(id, updatedData, { new: true });
+    const updatedProduct = await Product.findByIdAndUpdate(id, { name, quantity, price, image }, { new: true });
     if (!updatedProduct) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }

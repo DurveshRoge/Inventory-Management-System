@@ -32,11 +32,11 @@ const SignUp = () => {
       const res = await api.post('/api/auth/register', formData);
       console.log("Response data:", res.data); // Debugging statement
 
-      // Store JWT token in localStorage
-      localStorage.setItem('token', res.data.token);
+      // Optional: Store JWT token in localStorage (if needed)
+      // localStorage.setItem('token', res.data.token);
 
-      // Redirect to dashboard upon successful registration
-      navigate('/dashboard');
+      // Redirect to login page after successful registration
+      navigate('/login');
     } catch (err) {
       console.error("Error occurred:", err.response ? err.response.data : err.message);
       setError(err.response ? err.response.data.msg : 'Server Error'); // Show error message to user

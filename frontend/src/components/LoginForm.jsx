@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const Login = () => {
+// Create the Axios instance with configuration
+const api = axios.create({
+  baseURL: 'http://localhost:5000', // Ensure this matches your backend URL
+  headers: {
+    'Content-Type': 'application/json', // Set default content type for JSON
+  },
+});
+
+const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const [errorMessage, setErrorMessage] = useState(''); // Add state for error messages
 
   const { email, password } = formData;
   const navigate = useNavigate();
@@ -16,11 +25,14 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/auth/login', formData);
+      // Make the POST request using the Axios instance
+      const res = await api.post('/api/auth/login', formData);
       localStorage.setItem('token', res.data.token); // Store JWT token
-      navigate('/dashboard'); // Redirect to dashboard after login
+      navigate('/'); // Redirect to homepage after login
     } catch (err) {
-      console.error(err.response.data); // Handle errors
+      // Handle errors and display appropriate error messages
+      console.error('Login error:', err.response?.data || err.message); // Log full error response for debugging
+      setErrorMessage(err.response?.data?.msg || 'Login failed. Please try again.');
     }
   };
 
@@ -28,6 +40,11 @@ const Login = () => {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 pt-16">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-6">Login</h2>
+        {errorMessage && (
+          <div className="mb-4 p-2 bg-red-200 text-red-800 rounded-md">
+            {errorMessage}
+          </div>
+        )}
         <form onSubmit={onSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">Email</label>
@@ -60,4 +77,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default LoginForm;

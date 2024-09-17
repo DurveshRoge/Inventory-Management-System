@@ -19,23 +19,25 @@ exports.register = async (req, res) => {
       return res.status(400).json({ msg: 'User already exists' });
     }
 
-    // Create a new user
+    // Hash the password
+
+    // Create a new user with the hashed password
     user = new User({
       name,
       email,
-      password: await bcrypt.hash(password, 12) // Hash the password
+      password
     });
 
     await user.save();
 
     // Generate JWT token
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, 'your_jwt_secret', { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(201).json({ message: 'User registered successfully', token });
+    return res.status(201).json({ message: 'User registered successfully', token });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
 
@@ -48,26 +50,36 @@ exports.login = async (req, res) => {
 
   const { email, password } = req.body;
 
+  console.log("body",req.body)
+
   try {
     // Check if user exists
     let user = await User.findOne({ email });
+    console.log(user)
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Invalid credentials email' });
     }
 
+
+    console.log("user", user)
+
+
     // Check if password matches
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.checkPassword(password);
+
+    console.log("first" , isMatch,password)
+    
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.status(400).json({ msg: 'Invalid credentials password' });
     }
 
     // Generate JWT token
     const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, 'your_jwt_secret', { expiresIn: '1h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET || 'your_default_secret', { expiresIn: '1h' });
 
-    res.json({ token });
+    return res.json({ token });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send('Server error');
+    return res.status(500).send('Server error');
   }
 };
