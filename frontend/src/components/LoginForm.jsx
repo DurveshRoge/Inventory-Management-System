@@ -1,6 +1,8 @@
+// src/components/LoginForm.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 // Create the Axios instance with configuration
 const api = axios.create({
@@ -19,6 +21,7 @@ const LoginForm = () => {
 
   const { email, password } = formData;
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -28,7 +31,8 @@ const LoginForm = () => {
       // Make the POST request using the Axios instance
       const res = await api.post('/api/auth/login', formData);
       localStorage.setItem('token', res.data.token); // Store JWT token
-      navigate('/'); // Redirect to homepage after login
+      login(); // Update authentication context
+      navigate('/dashboard'); // Change this line to redirect to the Dashboard
     } catch (err) {
       // Handle errors and display appropriate error messages
       console.error('Login error:', err.response?.data || err.message); // Log full error response for debugging

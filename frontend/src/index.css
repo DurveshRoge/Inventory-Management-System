@@ -8,3 +8,31 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
 }
+
+/* Add this to your CSS file */
+.main-content {
+  min-height: calc(100vh - 6rem); /* Adjust 6rem based on the height of your navbar and footer */
+}
+
+/* index.css */
+.main-content {
+  min-height: calc(100vh - 6rem); /* Adjust according to your navbar and footer height */
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.bg-gray-800 {
+  background-color: #2d3748; /* Adjust this color as needed */
+}
+
+.text-white {
+  color: white;
+}
+
+/* Add additional styles as needed */

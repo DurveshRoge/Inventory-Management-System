@@ -35,7 +35,7 @@ const AddProductForm = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      navigate('/'); // Redirect to dashboard or product list
+      navigate('/products'); // Redirect to product list after adding the product
     } catch (error) {
       console.error('Error adding product:', error);
     }

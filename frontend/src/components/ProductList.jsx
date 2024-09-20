@@ -33,7 +33,7 @@ const ProductList = () => {
   };
 
   return (
-    <div>
+    <div className="main-content"> {/* Add the main-content class here */}
       <h2 className="text-2xl font-bold mb-4">Product List</h2>
       <table className="min-w-full bg-white border border-gray-200">
         <thead>

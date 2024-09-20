@@ -1,6 +1,8 @@
+// src/components/SignUp.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const api = axios.create({
   baseURL: 'http://localhost:5000', // Ensure this matches your backend URL
@@ -17,6 +19,7 @@ const SignUp = () => {
 
   const { name, email, password } = formData;
   const navigate = useNavigate();
+  const { login } = useAuth(); // Use login from context
 
   // Function to update form state on input change
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,11 +35,14 @@ const SignUp = () => {
       const res = await api.post('/api/auth/register', formData);
       console.log("Response data:", res.data); // Debugging statement
 
-      // Optional: Store JWT token in localStorage (if needed)
-      // localStorage.setItem('token', res.data.token);
+      // Store JWT token in localStorage
+      localStorage.setItem('token', res.data.token);
 
-      // Redirect to login page after successful registration
-      navigate('/login');
+      // Update authentication context
+      login();
+
+      // Redirect to dashboard after successful registration
+      navigate('/dashboard'); // Change this line to redirect to the Dashboard
     } catch (err) {
       console.error("Error occurred:", err.response ? err.response.data : err.message);
       setError(err.response ? err.response.data.msg : 'Server Error'); // Show error message to user

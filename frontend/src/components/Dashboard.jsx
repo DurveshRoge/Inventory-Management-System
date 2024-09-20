@@ -1,5 +1,7 @@
+// src/components/Dashboard.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import ProductList from './ProductList'; // Import your ProductList component
 
 const Dashboard = () => {
   return (
@@ -10,6 +12,7 @@ const Dashboard = () => {
           <button className="px-4 py-2 bg-blue-500 text-white rounded">Add New Product</button>
         </Link>
       </div>
+      {/* ProductList component for viewing products */}
       <ProductList />
     </div>
   );
