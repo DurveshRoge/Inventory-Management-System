@@ -5,8 +5,11 @@ import { useNavigate } from 'react-router-dom';
 const AddProductForm = () => {
   const [formData, setFormData] = useState({
     name: '',
+    description: '',
+    category: '',
     quantity: '',
-    price: '',
+    purchasePrice: '',
+    sellingPrice: '',
     image: null
   });
   const navigate = useNavigate();
@@ -24,8 +27,11 @@ const AddProductForm = () => {
     e.preventDefault();
     const data = new FormData();
     data.append('name', formData.name);
+    data.append('description', formData.description);
+    data.append('category', formData.category);
     data.append('quantity', formData.quantity);
-    data.append('price', formData.price);
+    data.append('purchasePrice', formData.purchasePrice);
+    data.append('sellingPrice', formData.sellingPrice);
     if (formData.image) data.append('image', formData.image);
 
     try {
@@ -58,6 +64,28 @@ const AddProductForm = () => {
         </div>
 
         <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <input
+            type="text"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Quantity</label>
           <input
             type="number"
@@ -70,11 +98,23 @@ const AddProductForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Price</label>
+          <label className="block text-sm font-medium text-gray-700">Purchase Price</label>
           <input
             type="number"
-            name="price"
-            value={formData.price}
+            name="purchasePrice"
+            value={formData.purchasePrice}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Selling Price</label>
+          <input
+            type="number"
+            name="sellingPrice"
+            value={formData.sellingPrice}
             onChange={handleChange}
             required
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"

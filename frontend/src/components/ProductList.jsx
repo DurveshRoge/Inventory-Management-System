@@ -33,7 +33,7 @@ const ProductList = () => {
   };
 
   return (
-    <div className="main-content p-6"> {/* Add padding for better spacing */}
+    <div className="main-content p-6">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Product List</h2>
       <table className="min-w-full bg-white border border-gray-300 shadow-lg rounded-lg">
         <thead>
@@ -45,10 +45,19 @@ const ProductList = () => {
               Name
             </th>
             <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
+              Description
+            </th>
+            <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
+              Category
+            </th>
+            <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
               Quantity
             </th>
             <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
-              Price
+              Purchase Price
+            </th>
+            <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
+              Selling Price
             </th>
             <th className="py-3 px-6 border-b-2 border-gray-200 text-left text-gray-600 uppercase tracking-wider">
               Actions
@@ -59,12 +68,14 @@ const ProductList = () => {
           {products.map((product) => (
             <tr key={product._id} className="hover:bg-gray-50">
               <td className="py-4 px-6 border-b border-gray-200">
-                {/* Show the product image */}
-                <img src={product.imageUrl} alt={product.name} className="w-16 h-16 object-cover rounded-md" />
+                <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-md" />
               </td>
               <td className="py-4 px-6 border-b border-gray-200">{product.name}</td>
+              <td className="py-4 px-6 border-b border-gray-200">{product.description}</td>
+              <td className="py-4 px-6 border-b border-gray-200">{product.category}</td>
               <td className="py-4 px-6 border-b border-gray-200">{product.quantity}</td>
-              <td className="py-4 px-6 border-b border-gray-200">${product.price}</td>
+              <td className="py-4 px-6 border-b border-gray-200">${product.purchasePrice}</td> {/* Added Purchase Price */}
+              <td className="py-4 px-6 border-b border-gray-200">${product.sellingPrice}</td>
               <td className="py-4 px-6 border-b border-gray-200">
                 <div className="flex space-x-4">
                   <Link to={`/products/edit/${product._id}`}>

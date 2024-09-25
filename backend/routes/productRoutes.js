@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Route to add a product with image upload
+// Route to add a new product with image upload
 router.post('/add', authMiddleware, upload.single('image'), addProduct);
 
 // Route to delete a product by ID
@@ -24,7 +24,7 @@ router.delete('/:id', authMiddleware, deleteProduct);
 // Route to get all products
 router.get('/', authMiddleware, getProducts);
 
-// Route to update a product by ID, with optional image upload
+// Route to update an existing product by ID, with optional image upload
 router.put('/:id', authMiddleware, upload.single('image'), updateProduct);
 
 module.exports = router;
