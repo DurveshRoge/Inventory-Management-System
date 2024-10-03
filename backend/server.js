@@ -1,22 +1,40 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors'); // Import the CORS package
+const cors = require('cors');
+const path = require('path');
 
-dotenv.config(); // Load environment variables from .env file
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
 app.use(express.json()); // Middleware to parse JSON request bodies
 
 // Configure CORS to allow cross-origin requests
 app.use(cors({
-  origin: process.env.FRONTEND_URL || '*', // Update this to your frontend's URL (e.g., 'http://localhost:3000')
+  origin: process.env.FRONTEND_URL || '*', // Set the frontend URL in .env as FRONTEND_URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Serve static files from the "uploads" directory
-app.use('/uploads', express.static('uploads'));
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Import routes
+const authRoutes = require('./routes/authRoutes');
+const productRoutes = require('./routes/productRoutes');
+const salesRoutes = require('./routes/salesRoutes');
+
+// Use routes
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/sales', salesRoutes);
+
+// Error handling middleware for any unhandled errors
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: 'Internal Server Error', error: err.message });
+});
 
 // Connect to MongoDB using the connection string from .env
 mongoose.connect(process.env.MONGODB_URI)
@@ -26,14 +44,14 @@ mongoose.connect(process.env.MONGODB_URI)
     process.exit(1); // Exit the process if MongoDB connection fails
   });
 
-// Import and define routes
-const authRoutes = require('./routes/authRoutes'); // Auth routes
-const productRoutes = require('./routes/productRoutes'); // Product routes
-const salesRoutes = require('./routes/salesRoutes'); // Sales routes
-
-app.use('/api/auth', authRoutes); // Authentication routes
-app.use('/api/products', productRoutes); // Product routes
-app.use('/api/sales', salesRoutes); // Sales routes
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.info('SIGTERM signal received. Closing MongoDB connection and shutting down server.');
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed.');
+    process.exit(0); // Exit the process gracefully
+  });
+});
 
 // Define the port number from environment variables or default to 5000
 const PORT = process.env.PORT || 5000;

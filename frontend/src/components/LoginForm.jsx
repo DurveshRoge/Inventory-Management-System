@@ -15,13 +15,13 @@ const api = axios.create({
 const LoginForm = () => {
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
   });
   const [errorMessage, setErrorMessage] = useState(''); // Add state for error messages
 
   const { email, password } = formData;
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login } = useAuth(); // This will update the AuthContext when the user logs in
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -29,10 +29,12 @@ const LoginForm = () => {
     e.preventDefault();
     try {
       // Make the POST request using the Axios instance
-      const res = await api.post('/api/auth/login', formData);
-      localStorage.setItem('token', res.data.token); // Store JWT token
-      login(); // Update authentication context
-      navigate('/dashboard'); // Change this line to redirect to the Dashboard
+      const response = await api.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', response.data.token); // Store JWT token
+      login(response.data.token); // Update authentication context with the token
+
+      // Redirect to the dashboard after successful login
+      navigate('/dashboard');
     } catch (err) {
       // Handle errors and display appropriate error messages
       console.error('Login error:', err.response?.data || err.message); // Log full error response for debugging
@@ -72,7 +74,10 @@ const LoginForm = () => {
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md">
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white py-2 rounded-md"
+          >
             Login
           </button>
         </form>

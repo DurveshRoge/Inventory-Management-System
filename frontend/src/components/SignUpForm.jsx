@@ -38,11 +38,11 @@ const SignUp = () => {
       // Store JWT token in localStorage
       localStorage.setItem('token', res.data.token);
 
-      // Update authentication context
-      login();
+      // Update authentication context with the token
+      login(res.data.token); // Pass the token to login
 
-      // Redirect to dashboard after successful registration
-      navigate('/dashboard'); // Change this line to redirect to the Dashboard
+      // Redirect to the user's dashboard after successful registration
+      navigate('/dashboard'); // Redirect to the dashboard without userId
     } catch (err) {
       console.error("Error occurred:", err.response ? err.response.data : err.message);
       setError(err.response ? err.response.data.msg : 'Server Error'); // Show error message to user

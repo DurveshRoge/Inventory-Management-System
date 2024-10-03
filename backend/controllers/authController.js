@@ -20,12 +20,14 @@ exports.register = async (req, res) => {
     }
 
     // Hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Create a new user with the hashed password
     user = new User({
       name,
       email,
-      password
+      password: hashedPassword, // Save hashed password
     });
 
     await user.save();
@@ -34,7 +36,7 @@ exports.register = async (req, res) => {
     const payload = { user: { id: user.id } };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    return res.status(201).json({ message: 'User registered successfully', token });
+    return res.status(201).json({ message: 'User registered successfully', token, userId: user.id });
   } catch (error) {
     console.error(error.message);
     return res.status(500).send('Server error');
@@ -50,34 +52,25 @@ exports.login = async (req, res) => {
 
   const { email, password } = req.body;
 
-  console.log("body",req.body)
-
   try {
     // Check if user exists
-    let user = await User.findOne({ email });
-    console.log(user)
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials email' });
+      return res.status(400).json({ msg: 'Invalid credentials: email not found' });
     }
 
-
-    console.log("user", user)
-
-
     // Check if password matches
-    const isMatch = await user.checkPassword(password);
+    const isMatch = await bcrypt.compare(password, user.password); // Use bcrypt to compare hashed password
 
-    console.log("first" , isMatch,password)
-    
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials password' });
+      return res.status(400).json({ msg: 'Invalid credentials: incorrect password' });
     }
 
     // Generate JWT token
     const payload = { user: { id: user.id } };
     const token = jwt.sign(payload, process.env.JWT_SECRET || 'your_default_secret', { expiresIn: '1h' });
 
-    return res.json({ token });
+    return res.json({ token, userId: user.id }); // Include userId in the response
   } catch (error) {
     console.error(error.message);
     return res.status(500).send('Server error');

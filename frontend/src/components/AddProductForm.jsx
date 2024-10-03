@@ -10,10 +10,12 @@ const AddProductForm = () => {
     quantity: '',
     purchasePrice: '',
     sellingPrice: '',
-    image: null
+    image: null,
   });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // Handle change in input fields and file selection
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === 'image') {
@@ -25,6 +27,14 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if all fields are filled
+    if (!formData.name || !formData.category || !formData.quantity || !formData.purchasePrice || !formData.sellingPrice) {
+      alert('Please fill all required fields.');
+      return;
+    }
+
+    // Prepare FormData
     const data = new FormData();
     data.append('name', formData.name);
     data.append('description', formData.description);
@@ -32,18 +42,38 @@ const AddProductForm = () => {
     data.append('quantity', formData.quantity);
     data.append('purchasePrice', formData.purchasePrice);
     data.append('sellingPrice', formData.sellingPrice);
-    if (formData.image) data.append('image', formData.image);
 
+    // Append image file only if it is selected and is an image
+    if (formData.image) {
+      if (!formData.image.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+      data.append('image', formData.image);
+    }
+
+    setLoading(true);
     try {
+      // Send POST request to the backend
       await axios.post('http://localhost:5000/api/products/add', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Ensure token is present
+        },
       });
+      alert('Product added successfully!');
       navigate('/products'); // Redirect to product list after adding the product
     } catch (error) {
+      // Log the error for debugging
       console.error('Error adding product:', error);
+      // Display user-friendly error message
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        alert('An error occurred while adding the product. Please try again.');
+      }
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -133,9 +163,10 @@ const AddProductForm = () => {
 
         <button
           type="submit"
-          className="w-full py-2 bg-blue-500 text-white rounded-md"
+          className={`w-full py-2 ${loading ? 'bg-gray-400' : 'bg-blue-500'} text-white rounded-md`}
+          disabled={loading}
         >
-          Add Product
+          {loading ? 'Adding Product...' : 'Add Product'}
         </button>
       </form>
     </div>
