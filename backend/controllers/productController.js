@@ -44,8 +44,11 @@ exports.addProduct = async (req, res) => {
 // Fetch products for a specific user
 exports.getProductsForUser = async (req, res) => {
   try {
-    const userId = req.user.user.id; // Assuming user ID is attached to the request
+    const { userId } = req.params; // Assuming user ID is in req.params as `userId`
+    console.log(req.params); // Log params for debugging
+
     const products = await Product.find({ userId });
+    console.log(products)
 
     if (!products.length) {
       return res.status(404).json({ success: false, message: 'No products found for this user.' });
@@ -57,6 +60,7 @@ exports.getProductsForUser = async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to fetch products.', error: error.message });
   }
 };
+
 
 // Delete an existing product
 exports.deleteProduct = async (req, res) => {

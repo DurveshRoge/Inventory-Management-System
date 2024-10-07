@@ -23,17 +23,14 @@ const ProductList = () => {
           const response = await api.get('/api/products/user/products'); // Fetch user-specific products
           console.log('Products fetched:', response.data);
 
-          // Check if the products are in `response.data.products`
           if (response.data.products) {
             setProducts(response.data.products);
           } else {
-            // If the structure is different, adjust this part accordingly
-            setProducts(response.data); // Adjust this based on your actual API response structure
+            setProducts(response.data);
           }
-
         } catch (err) {
           console.error('Error fetching products:', err.response ? err.response.data : err);
-          setError(err.response ? err.response.data.msg : 'Failed to fetch products');
+          setError(err.response?.data?.message || 'Failed to fetch products');
         } finally {
           setLoading(false);
         }
@@ -48,8 +45,8 @@ const ProductList = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await api.delete(`/api/products/${id}`); // Delete product by ID
-        setProducts(products.filter((product) => product._id !== id)); // Remove from list
+        await api.delete(`/api/products/${id}`);
+        setProducts(products.filter((product) => product._id !== id));
       } catch (error) {
         console.error('Error deleting product:', error);
       }
@@ -82,7 +79,11 @@ const ProductList = () => {
             {products.map((product) => (
               <tr key={product._id} className="hover:bg-gray-50">
                 <td className="py-4 px-6 border-b border-gray-200">
-                  <img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded-md" />
+                  <img
+                    src={product.image || 'https://via.placeholder.com/100'}
+                    alt={product.name}
+                    className="w-16 h-16 object-cover rounded-md"
+                  />
                 </td>
                 <td className="py-4 px-6 border-b border-gray-200">{product.name}</td>
                 <td className="py-4 px-6 border-b border-gray-200">{product.description}</td>
