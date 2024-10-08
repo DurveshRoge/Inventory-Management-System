@@ -20,7 +20,7 @@ const ProductList = () => {
     const fetchProducts = async () => {
       if (isAuthenticated) {
         try {
-          const response = await api.get('/api/products/user/products'); // Fetch user-specific products
+          const response = await api.get('/api/products/products'); // Fetch user-specific products
           console.log('Products fetched:', response.data);
 
           if (response.data.products) {

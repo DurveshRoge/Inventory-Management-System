@@ -44,8 +44,10 @@ exports.addProduct = async (req, res) => {
 // Fetch products for a specific user
 exports.getProductsForUser = async (req, res) => {
   try {
-    const { userId } = req.params; // Assuming user ID is in req.params as `userId`
-    console.log(req.params); // Log params for debugging
+    // const { userId } = req.params; // Assuming user ID is in req.params as `userId`
+    // console.log(req.params); // Log params for debugging
+
+    const userId = req.user.user.id; // Updated to access userId correctly
 
     const products = await Product.find({ userId });
     console.log(products)

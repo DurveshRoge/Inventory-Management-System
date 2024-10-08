@@ -26,6 +26,8 @@ const LoginForm = () => {
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = async (e) => {
+    localStorage.clear(); // Clear any existing tokens before logging in
+
     e.preventDefault();
     try {
       // Make the POST request using the Axios instance

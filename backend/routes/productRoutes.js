@@ -41,7 +41,7 @@ router.delete('/:id', authMiddleware, deleteProduct);
 router.get('/', getProducts); // This could be updated based on your needs
 
 // Route to get products for the authenticated user
-router.get('/:id/products', getProductsForUser); // New route for fetching user's products
+router.get('/products', authMiddleware, getProductsForUser); // New route for fetching user's products
 
 // Route to update an existing product by ID, with optional image upload
 router.put('/:id', authMiddleware, upload.single('image'), updateProduct);
