@@ -15,7 +15,7 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       if (isAuthenticated) {
         try {
-          const response = await axios.get('http://localhost:5000/api/products/user/products', {
+          const response = await axios.get('http://localhost:5000/api/products/products', {
             headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
           });
           
@@ -24,11 +24,11 @@ const Dashboard = () => {
           if (response.data.success) {
             setProducts(response.data.products);
           } else {
-            setError('Failed to load products');
+            setError(err.response?.data?.message || 'Failed to fetch products');
           }
         } catch (err) {
           console.error('Failed to fetch dashboard data:', err);
-          setError('Failed to load data');
+          setError(err.response?.data?.message || 'Failed to fetch products');
         } finally {
           setLoading(false);
         }
