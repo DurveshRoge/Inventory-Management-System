@@ -1,29 +1,33 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext'; // Wrap the app with AuthProvider
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // Import Footer
+import Footer from './components/Footer';
 import Login from './components/LoginForm';
 import SignUp from './components/SignUpForm';
-import ProtectedRoute from './components/ProtectedPage'; // Protect routes that require authentication
+import ProtectedRoute from './components/ProtectedPage';
 import Dashboard from './components/Dashboard';
-import HomePage from './components/Homepage'; // General homepage for non-logged-in users
+import HomePage from './components/Homepage';
 import AddProductForm from './components/AddProductForm';
 import EditProductForm from './components/EditProductForm';
 import ProductList from './components/ProductList';
+import About from './components/About';
+import Contact from './components/Contact';
 
 const App = () => {
   return (
-    <AuthProvider> {/* Wrap everything inside AuthProvider to provide auth state throughout the app */}
+    <AuthProvider>
       <Router>
-        <div className="app-container">
-          <Navbar /> {/* Include the Navbar component */}
-          <main className="content">
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-grow">
             <Routes>
               {/* Public routes */}
-              <Route path="/" element={<HomePage />} /> {/* General homepage for non-logged-in users */}
+              <Route path="/" element={<HomePage />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
 
               {/* Protected routes for logged-in users */}
               <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -32,7 +36,7 @@ const App = () => {
               <Route path="/products" element={<ProtectedRoute><ProductList /></ProtectedRoute>} />
             </Routes>
           </main>
-          <Footer className="footer" /> {/* Include Footer component */}
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

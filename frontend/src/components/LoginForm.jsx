@@ -65,64 +65,68 @@ const LoginForm = () => {
       setErrorMessage(err.response?.data?.msg || 'Login failed. Please try again.');
     }
   };
-
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 pt-16">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">Login</h2>
-        {errorMessage && (
-          <div className="mb-4 p-2 bg-red-200 text-red-800 rounded-md">
-            {errorMessage}
-          </div>
-        )}
-        <form onSubmit={onSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={onChange}
-              required
-              className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700">Password</label>
-            <div className="relative">
+  
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-100 to-purple-100 pt-16">
+        <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-xl">
+          <h2 className="text-3xl font-bold mb-6 text-center text-indigo-700">Login</h2>
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md border border-red-300">
+              {errorMessage}
+            </div>
+          )}
+          <form onSubmit={onSubmit}>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={password}
+                type="email"
+                name="email"
+                value={email}
                 onChange={onChange}
                 required
-                className="mt-1 block w-full p-2 pr-10 border border-gray-300 rounded-md"
+                className="mt-1 block w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
               />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                onClick={togglePasswordVisibility}
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
             </div>
-            {passwordError && (
-              <p className="mt-1 text-sm text-red-500">{passwordError}</p>
-            )}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={password}
+                  onChange={onChange}
+                  required
+                  className="mt-1 block w-full p-3 pr-10 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-150 ease-in-out"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-indigo-500"
+                  onClick={togglePasswordVisibility}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+              {passwordError && (
+                <p className="mt-1 text-sm text-red-500">{passwordError}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={passwordError !== ''}
+              className={`w-full py-3 rounded-md text-white font-semibold ${
+                passwordError !== '' ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+              } transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              Login
+            </button>
+          </form>
+          <div className="mt-4 text-center">
+            <a href="#" className="text-sm text-indigo-600 hover:text-indigo-800">Forgot password?</a>
           </div>
-          <button
-            type="submit"
-            disabled={passwordError !== ''}
-            className={`w-full py-2 rounded-md text-white ${
-              passwordError !== '' ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'
-            } transition-all duration-300 ease-in-out`}
-          >
-            Login
-          </button>
-        </form>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
+  
 
 export default LoginForm;
