@@ -5,10 +5,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 const EditProductForm = () => {
   const [formData, setFormData] = useState({
     name: '',
+    description: '',
+    category: '',
     quantity: '',
-    price: '',
-    image: null
+    purchasePrice: '',
+    sellingPrice: '',
+    image: null,
   });
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -18,13 +22,19 @@ const EditProductForm = () => {
         const { data } = await axios.get(`http://localhost:5000/api/products/${id}`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
-        setFormData(data.product);
+        if (data.success && data.product) {
+          setFormData(data.product);
+        } else {
+          throw new Error('Product not found');
+        }
       } catch (error) {
         console.error('Error fetching product:', error);
+        alert('Product not found. Redirecting to product list.');
+        navigate('/products');
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -37,12 +47,28 @@ const EditProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.category || !formData.quantity || !formData.purchasePrice || !formData.sellingPrice) {
+      alert('Please fill all required fields.');
+      return;
+    }
+
     const data = new FormData();
     data.append('name', formData.name);
+    data.append('description', formData.description);
+    data.append('category', formData.category);
     data.append('quantity', formData.quantity);
-    data.append('price', formData.price);
-    if (formData.image) data.append('image', formData.image);
+    data.append('purchasePrice', formData.purchasePrice);
+    data.append('sellingPrice', formData.sellingPrice);
+    if (formData.image && formData.image instanceof File) {
+      if (!formData.image.type.startsWith('image/')) {
+        alert('Please select a valid image file.');
+        return;
+      }
+      data.append('image', formData.image);
+    }
 
+    setLoading(true);
     try {
       await axios.put(`http://localhost:5000/api/products/${id}`, data, {
         headers: {
@@ -50,9 +76,17 @@ const EditProductForm = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
-      navigate('/'); // Redirect to dashboard or product list
+      alert('Product updated successfully!');
+      navigate('/products');
     } catch (error) {
       console.error('Error updating product:', error);
+      if (error.response && error.response.data && error.response.data.message) {
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        alert('An error occurred while updating the product. Please try again.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,6 +107,28 @@ const EditProductForm = () => {
         </div>
 
         <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Description</label>
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Category</label>
+          <input
+            type="text"
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Quantity</label>
           <input
             type="number"
@@ -85,11 +141,23 @@ const EditProductForm = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Price</label>
+          <label className="block text-sm font-medium text-gray-700">Purchase Price</label>
           <input
             type="number"
-            name="price"
-            value={formData.price}
+            name="purchasePrice"
+            value={formData.purchasePrice}
+            onChange={handleChange}
+            required
+            className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Selling Price</label>
+          <input
+            type="number"
+            name="sellingPrice"
+            value={formData.sellingPrice}
             onChange={handleChange}
             required
             className="mt-1 block w-full p-2 border border-gray-300 rounded-md"
@@ -108,9 +176,10 @@ const EditProductForm = () => {
 
         <button
           type="submit"
-          className="w-full py-2 bg-blue-500 text-white rounded-md"
+          className={`w-full py-2 ${loading ? 'bg-gray-400' : 'bg-blue-500'} text-white rounded-md`}
+          disabled={loading}
         >
-          Update Product
+          {loading ? 'Updating Product...' : 'Update Product'}
         </button>
       </form>
     </div>

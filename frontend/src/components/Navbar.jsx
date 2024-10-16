@@ -8,12 +8,9 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
-  // Use effect to sync localStorage with context state (if needed)
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token && !isAuthenticated) {
-      // Simulate login from token
-      // Ideally, you would also verify the token with an API
       localStorage.setItem('token', token);
     }
   }, [isAuthenticated]);
@@ -22,25 +19,40 @@ const Navbar = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <nav className="bg-white shadow-md fixed w-full z-10 top-0">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-2xl font-bold text-black">
+            <Link to={isAuthenticated ? "/dashboard" : "/"} className="text-2xl font-bold text-black">
               Inventory Management
             </Link>
           </div>
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-black hover:text-blue-500">Home</Link>
+            <a href="/" onClick={handleHomeClick} className="text-black hover:text-blue-500">
+              {isAuthenticated ? "Dashboard" : "Home"}
+            </a>
             <Link to="/about" className="text-black hover:text-blue-500">About</Link>
             <Link to="/contact" className="text-black hover:text-blue-500">Contact</Link>
 
-            {/* Conditionally render Login/SignUp or Logout */}
             {isAuthenticated ? (
-              <button onClick={() => { logout(); navigate('/login'); }} className="text-black hover:text-red-500">Logout</button>
+              <button onClick={handleLogout} className="text-black hover:text-red-500">Logout</button>
             ) : (
               <>
                 <Link to="/signup" className="text-black hover:text-blue-500">Sign Up</Link>
@@ -64,13 +76,14 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden bg-white">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link to="/" className="block text-black hover:text-blue-500">Home</Link>
+            <a href="/" onClick={handleHomeClick} className="block text-black hover:text-blue-500">
+              {isAuthenticated ? "Dashboard" : "Home"}
+            </a>
             <Link to="/about" className="block text-black hover:text-blue-500">About</Link>
             <Link to="/contact" className="block text-black hover:text-blue-500">Contact</Link>
 
-            {/* Conditionally render Login/SignUp or Logout */}
             {isAuthenticated ? (
-              <button onClick={() => { logout(); navigate('/login'); }} className="block text-black hover:text-red-500">Logout</button>
+              <button onClick={handleLogout} className="block text-black hover:text-red-500">Logout</button>
             ) : (
               <>
                 <Link to="/signup" className="block text-black hover:text-blue-500">Sign Up</Link>
