@@ -12,6 +12,7 @@ const api = axios.create({
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { isAuthenticated } = useAuth();
@@ -19,25 +20,38 @@ const ProductList = () => {
   const [showSellModal, setShowSellModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantityToSell, setQuantityToSell] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchProducts();
+    if (isAuthenticated) {
+      fetchProducts();
+    } else {
+      setProducts([]);
+      setFilteredProducts([]);
+    }
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const filtered = products.filter(product => 
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+    calculateOverallTotalSales(filtered);
+  }, [searchTerm, products]);
+
   const fetchProducts = async () => {
-    if (isAuthenticated) {
-      try {
-        const response = await api.get('/api/products/products');
-        console.log('Products fetched:', response.data);
-        setProducts(response.data.products || response.data);
-        calculateOverallTotalSales(response.data.products || response.data);
-      } catch (err) {
-        console.error('Error fetching products:', err.response ? err.response.data : err);
-        setError(err.response?.data?.message || 'Failed to fetch products');
-      } finally {
-        setLoading(false);
-      }
-    } else {
+    try {
+      const response = await api.get('/api/products/products');
+      console.log('Products fetched:', response.data);
+      const fetchedProducts = response.data.products || response.data;
+      setProducts(fetchedProducts);
+      setFilteredProducts(fetchedProducts);
+      calculateOverallTotalSales(fetchedProducts);
+    } catch (err) {
+      console.error('Error fetching products:', err.response ? err.response.data : err);
+      setError(err.response?.data?.message || 'Failed to fetch products');
+    } finally {
       setLoading(false);
     }
   };
@@ -70,6 +84,7 @@ const ProductList = () => {
           p._id === updatedProduct._id ? updatedProduct : p
         );
         setProducts(updatedProducts);
+        setFilteredProducts(updatedProducts);
         calculateOverallTotalSales(updatedProducts);
         alert(`Sale confirmed. Amount: $${selectedProduct.sellingPrice * quantityToSell}`);
         setShowSellModal(false);
@@ -88,6 +103,7 @@ const ProductList = () => {
         await api.delete(`/api/products/${id}`);
         const updatedProducts = products.filter((product) => product._id !== id);
         setProducts(updatedProducts);
+        setFilteredProducts(updatedProducts);
         calculateOverallTotalSales(updatedProducts);
       } catch (error) {
         console.error('Error deleting product:', error);
@@ -104,7 +120,19 @@ const ProductList = () => {
       <div className="mb-6 text-2xl font-semibold text-green-600 bg-white p-4 rounded-lg shadow-md text-center">
         Overall Total Sales: ${overallTotalSales.toFixed(2)}
       </div>
-      {products.length === 0 ? (
+      
+      {/* Search Bar */}
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search products by name or category..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 rounded-lg border border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+
+      {filteredProducts.length === 0 ? (
         <p className="text-center text-gray-600 text-xl">No products found.</p>
       ) : (
         <div className="overflow-x-auto">
@@ -123,7 +151,7 @@ const ProductList = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product, index) => (
+              {filteredProducts.map((product, index) => (
                 <tr key={product._id} className={index % 2 === 0 ? 'bg-purple-50' : 'bg-white'}>
                   <td className="py-4 px-6">
                     <img src={`http://localhost:5000/${product.image}` || 'https://via.placeholder.com/100'} alt={product.name} className="w-16 h-16 object-cover rounded-md shadow" />
