@@ -11,15 +11,7 @@
       "use": "@vercel/node"
     }
 
-    {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static",
-      "config": { "distDir": "dist" }
-    }
-  ]
-}
+    
   ],
   "routes": [
     {
