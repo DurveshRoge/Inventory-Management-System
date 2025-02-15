@@ -19,7 +19,7 @@ const EditProductForm = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const { data } = await axios.get(`http://localhost:5000/api/products/${id}`, {
+        const { data } = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/products/${id}`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
         if (data.success && data.product) {
@@ -70,7 +70,7 @@ const EditProductForm = () => {
 
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, data, {
+      await axios.put(`${process.env.REACT_APP_API_BASE_URL}/api/products/${id}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`

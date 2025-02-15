@@ -55,7 +55,7 @@ const AddProductForm = () => {
     setLoading(true);
     try {
       // Send POST request to the backend
-      await axios.post('http://localhost:5000/api/products/add', data, {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL}/api/products/add`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${localStorage.getItem('token')}`, // Ensure token is present

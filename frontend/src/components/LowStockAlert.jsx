@@ -7,7 +7,7 @@ const LowStockAlert = () => {
   useEffect(() => {
     const fetchLowStockItems = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products/low-stock', {
+        const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/api/products/low-stock`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
         setLowStockItems(response.data);

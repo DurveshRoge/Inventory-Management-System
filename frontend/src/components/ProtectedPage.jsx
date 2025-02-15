@@ -20,7 +20,6 @@ const ProtectedRoute = ({ children }) => {
   }
 
   return children; // Render the child components if authenticated
-  return children; 
 };
 
 export default ProtectedRoute;
