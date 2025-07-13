@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const api = axios.create({
-  baseURL: process.env.BASE_URL ,
+ baseURL: import.meta.env.VITE_API_BASE_URL
+ ,
   headers: {
     Authorization: `Bearer ${localStorage.getItem('token')}`,
   },
